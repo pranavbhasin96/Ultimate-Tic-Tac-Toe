@@ -1,0 +1,18 @@
+swapnil - lose both
+daksh  - lose draw both
+vidit  - win draw, lose
+deva - lose both
+
+
+
+after openmove = 20
+vidit - draw win win
+
+after openmove =25
+daksh - draw-lose draw-lose
+
+after openmove = 15
+daksh lose draw-lose
+
+after openmove = 30
+daksh draw-draw lose-draw

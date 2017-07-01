@@ -1,0 +1,443 @@
+	def heuristics(self, last_move):
+		ownFlag = self.marker
+		oppFlag = self.getMarker(ownFlag)
+
+		heurVal = 0
+
+		bs = boardCopy.block_status
+		BS = boardCopy.board_status
+
+		##############################################################
+		# checking if this move helped us win block
+		##############################################################
+		blockX = last_move[0]/4
+		blockY = last_move[1]/4
+		if bs[blockX][blockY] == ownFlag:
+			heurVal+=50
+		elif bs[blockX][blockY] == oppFlag:
+			heurVal-=50
+
+		##############################################################
+		#checking for others continuous blocks or cutting other blocks
+		##############################################################
+
+		countSelfFDiagonal = 0
+		countOtherFDiagonal = 0
+		countSelfBDiagonal = 0
+		countOtherBDiagonal = 0
+
+		for i in range(4):
+			countSelfRow = 0
+			countOtherRow = 0
+			countSelfColumn = 0
+			countOtherColumn = 0
+			for j in range(4):
+				# Checking Rows
+				if bs[i][j] == ownFlag:
+					countSelfRow += 1
+				if bs[i][j] == oppFlag:
+					countOtherRow += 1
+
+				# Checking Columns
+				if bs[j][i] == ownFlag:
+					countSelfColumn += 1
+				if bs[j][i] == oppFlag:
+					countOtherColumn += 1
+			
+			# Evaluating Rows
+			if countSelfRow > 0 and countOtherRow > 0:
+				if countSelfRow == 2:
+					heurVal -= 10
+				elif countSelfRow == 3:
+					heurVal -= 25
+			
+			elif countOtherRow > 0:
+				if countOtherRow == 2:
+					heurVal -= 10
+				elif countOtherRow == 3:
+					heurVal -= 25
+
+			# Evaluating Columns
+			if countSelfColumn > 0 and countOtherColumn > 0:
+				if countSelfColumn == 2:
+					heurVal -= 10
+				elif countSelfColumn == 3:
+					heurVal -= 25
+			
+			elif countOtherColumn > 0:
+				if countOtherColumn == 2:
+					heurVal -= 10
+				elif countOtherColumn == 3:
+					heurVal -= 25
+
+			# Checking Forward Diagonal
+			if bs[i][i] == ownFlag:
+				countSelfFDiagonal += 1
+			if bs[i][i] == oppFlag:
+				countOtherFDiagonal += 1
+			
+			# Checking Backward Diagonal
+			if bs[3-i][i] == ownFlag:
+				countSelfBDiagonal += 1
+			if bs[3-i][i] == oppFlag:
+				countOtherBDiagonal += 1
+
+		# Evaluating Forward Diagonal
+		if countSelfFDiagonal > 0 and countOtherFDiagonal > 0:
+			if countSelfFDiagonal == 2:
+				heurVal -= 10
+			elif countSelfFDiagonal == 3:
+				heurVal -= 25
+		
+		elif countOtherFDiagonal > 0:
+			if countOtherFDiagonal == 2:
+				heurVal -= 10
+			elif countOtherFDiagonal == 3:
+				heurVal -= 25
+
+		# Evaluating Back Diagonal
+		if countSelfBDiagonal > 0 and countOtherBDiagonal > 0:
+			if countSelfBDiagonal == 2:
+				heurVal -= 10
+			elif countSelfBDiagonal == 3:
+				heurVal -= 25
+		
+		elif countOtherBDiagonal > 0:
+			if countOtherBDiagonal == 2:
+				heurVal -= 10
+			elif countOtherBDiagonal == 3:
+				heurVal -= 25
+
+		#############################################################
+		#checking for other continuous cells in each block or cutting
+		##############################################################
+		for k in range(4):
+			for l in range(4):
+				countSelfFDiagonal = 0
+				countOtherFDiagonal = 0
+				countSelfBDiagonal = 0
+				countOtherBDiagonal = 0
+				for i in range(4):
+					countSelfRow = 0
+					countOtherRow = 0
+					countSelfColumn = 0
+					countOtherColumn = 0
+					for j in range(4):
+						# Checking Rows
+						if BS[4*k + i][4*l + j] == ownFlag:
+							countSelfRow += 1
+						if BS[4*k + i][4*l + j] == oppFlag:
+							countOtherRow += 1
+						
+						# Checking Columns
+						if BS[4*k + j][4*l + i] == ownFlag:
+							countSelfColumn += 1
+						if BS[4*k + j][4*l + i] == oppFlag:
+							countOtherColumn += 1
+
+					# Evaluating Rows
+					if countSelfRow > 0 and countOtherRow > 0:
+						if countSelfRow == 2:
+							heurVal -= 3
+						elif countSelfRow == 3:
+							heurVal -= 8
+					
+					elif countOtherRow > 0:
+						if countOtherRow == 2:
+							heurVal -= 3
+						elif countOtherRow == 3:
+							heurVal -= 8
+
+					# Evaluating Columns
+					if countSelfColumn > 0 and countOtherColumn > 0:
+						if countSelfColumn == 2:
+							heurVal -= 3
+						elif countSelfColumn == 3:
+							heurVal -= 8
+					
+					if countOtherColumn > 0:
+						if countOtherColumn == 2:
+							heurVal -= 3
+						elif countOtherColumn == 3:
+							heurVal -= 8
+
+					# Checking Forward Diagonal
+					if BS[4*k + i][4*l + i] == ownFlag:
+						countSelfFDiagonal += 1
+					if BS[4*k + i][4*l + i] == oppFlag:
+						countOtherFDiagonal += 1
+
+					# Checking Back Diagonal
+					if BS[4*k + 3-i][4*l + i] == ownFlag:
+						countSelfBDiagonal += 1
+					if BS[4*k + 3-i][4*l + i] == oppFlag:
+						countOtherBDiagonal += 1
+				
+				# Evaluating Forward Diagonal
+				if countSelfFDiagonal > 0 and countOtherFDiagonal > 0:
+					if countSelfFDiagonal == 2:
+						heurVal -= 3
+					elif countSelfFDiagonal == 3:
+						heurVal -= 8
+				
+				elif countOtherFDiagonal > 0:
+					if countOtherFDiagonal == 2:
+						heurVal -= 3
+					elif countOtherFDiagonal == 3:
+						heurVal -= 8
+
+				# Evaluating Back Diagonal
+				if countSelfBDiagonal > 0 and countOtherBDiagonal > 0:
+					if countSelfBDiagonal == 2:
+						heurVal -= 3
+					elif countSelfBDiagonal == 3:
+						heurVal -= 8
+				
+				elif countOtherBDiagonal > 0:
+					if countOtherBDiagonal == 2:
+						heurVal -= 3
+					elif countOtherBDiagonal == 3:
+						heurVal -= 8
+
+		##############################################################
+		#checking for continuous blocks or cutting other blocks
+		##############################################################
+		
+		countSelfFDiagonal = 0
+		countOtherFDiagonal = 0
+		countSelfBDiagonal = 0
+		countOtherBDiagonal = 0
+		
+		for i in range(4):
+			countSelfRow  = 0
+			countOtherRow = 0
+			countSelfColumn = 0
+			countOtherColumn = 0
+			
+			for j in range(4):
+				# Checking Rows
+				if bs[i][j] == oppFlag:
+					countOtherRow += 1
+				if bs[i][j] == ownFlag:
+					countSelfRow += 1
+				
+				# Checking Columns
+				if bs[j][i] == oppFlag:
+					countOtherColumn += 1
+				if bs[j][i] == ownFlag:
+					countSelfColumn += 1
+			
+			# Evaluating Rows
+			if countOtherRow > 0 and countSelfRow > 0:
+				if countOtherRow == 2:
+					heurVal += 10
+				elif countOtherRow == 3:
+					heurVal += 25
+			
+			elif countSelfRow > 0:
+				if countSelfRow == 2:
+					heurVal += 10
+				elif countSelfRow == 3:
+					heurVal += 25
+			
+			# Evaluating Columns
+			if countOtherColumn > 0 and countSelfColumn > 0:
+				if countOtherColumn == 2:
+					heurVal += 10
+				elif countOtherColumn == 3:
+					heurVal += 25
+					
+			elif countSelfColumn > 0:
+				if countSelfColumn == 2:
+					heurVal += 10
+				elif countSelfColumn == 3:
+					heurVal += 25
+
+		# Checking Forward Diagonal
+			if bs[i][i] == oppFlag:
+				countOtherFDiagonal += 1
+			if bs[i][i] == ownFlag:
+				countSelfFDiagonal += 1
+		
+		# Checking Backward Diagonal
+			if bs[3-i][i] == oppFlag:
+				countOtherBDiagonal += 1
+			if bs[3-i][i] == ownFlag:
+				countSelfBDiagonal += 1
+		
+		# Evaluating Forward Diagonal
+		if countOtherFDiagonal > 0 and countSelfFDiagonal > 0:
+			if countOtherFDiagonal == 2:
+				heurVal += 10
+			elif countOtherFDiagonal == 3:
+				heurVal += 25
+		
+		elif countSelfFDiagonal > 0:
+			if countSelfFDiagonal == 2:
+				heurVal += 10
+			elif countSelfFDiagonal == 3:
+				heurVal += 25
+		
+		# Evaluating Backward Diagonal
+		if countOtherBDiagonal > 0 and countSelfBDiagonal > 0:
+			if countOtherBDiagonal == 2:
+				heurVal += 10
+			elif countOtherBDiagonal == 3:
+				heurVal += 25
+		
+		elif countSelfBDiagonal > 0:
+			if countSelfBDiagonal == 2:
+				heurVal += 10
+			elif countSelfBDiagonal == 3:
+				heurVal += 25
+
+		#############################################################
+		#checking for continuous cells in each block or cutting
+		##############################################################
+		
+		for k in range(4):
+			for l in range(4):
+				countSelfFDiagonal = 0
+				countOtherFDiagonal = 0
+				countSelfBDiagonal = 0
+				countOtherBDiagonal = 0
+				
+				for i in range(4):
+					countSelfRow  = 0
+					countOtherRow = 0
+					countSelfColumn = 0
+					countOtherColumn = 0
+					
+					for j in range(4):
+						
+						# Checking Rows
+						if BS[4*k + i][4*l + j] == oppFlag:
+							countOtherRow += 1
+						if BS[4*k + i][4*l + j] == ownFlag:
+							countSelfRow += 1
+						
+						# Checking Columns
+						if BS[4*k + j][4*l + i] == oppFlag:
+							countOtherColumn += 1
+						if BS[4*k + j][4*l + i] == ownFlag:
+							countSelfColumn += 1
+						
+						# Getting Center Squares in Blocks
+						if ((i==1 or i==2) and (j==1 or j==2)):
+							if BS[4*k + i][4*l + j] == ownFlag:
+								# print "centre square mila"
+								heurVal += 5
+							elif BS[4*k + i][4*l + j] == oppFlag:
+								# print "centre square kata"
+								heurVal -= 5
+
+						# Getting Corner Squares in Blocks
+						if ((i==0 or i==3) and (j==0 or j==3)):
+							if BS[4*k + i][4*l + j] == ownFlag:
+								# print "corner square mila"
+								heurVal += 5
+							elif BS[4*k + i][4*l + j] == oppFlag:
+								# print "corner square kata"
+								heurVal -= 5
+
+						# Getting Square in Centre Blocks
+						if ((k==1 or k==2) and (l==1 or l==2)):
+							if BS[4*k + i][4*l + j] == ownFlag:
+								# print "centre block me mila"
+								heurVal += 3
+							elif BS[4*k + i][4*l + j] == oppFlag:
+								# print "centre block me kata"
+								heurVal -= 3
+
+						# Getting Square in Corner Blocks
+						if ((k==0 or k==3) and (l==0 or l==3)):
+							if BS[4*k + i][4*l + j] == ownFlag:
+								# print "corner block me mila"
+								heurVal += 3
+							elif BS[4*k + i][4*l + j] == oppFlag:
+								# print "corner block me kata"
+								heurVal -= 3
+					
+					if countOtherRow > 0 and countSelfRow > 0:
+						if countOtherRow == 2:
+							heurVal += 3
+						elif countOtherRow == 3:
+							heurVal += 8
+					
+					elif countSelfRow > 0:
+						if countSelfRow == 2:
+							heurVal += 3
+						elif countSelfRow == 3:
+							heurVal += 8
+
+					if countOtherColumn > 0 and countSelfColumn > 0:
+						if countOtherColumn == 2:
+							heurVal += 3
+						elif countOtherColumn == 3:
+							heurVal += 8
+					
+					elif countSelfColumn > 0:
+						if countSelfColumn == 2:
+							heurVal += 3
+						elif countSelfColumn == 3:
+							heurVal += 8
+
+					# Checking Forward Diagonal
+					if BS[4*k + i][4*l + i] == oppFlag:
+						countOtherFDiagonal += 1
+					if BS[4*k + i][4*l + i] == ownFlag:
+						countSelfFDiagonal += 1
+					
+					# Checking Backward Diagonal
+					if BS[4*k + 3-i][4*l + i] == oppFlag:
+						countOtherBDiagonal += 1
+					if BS[4*k + 3-i][4*l + i] == ownFlag:
+						countSelfBDiagonal += 1
+				
+				# Evaluating Forward Diagonal
+				if countOtherFDiagonal > 0 and countSelfFDiagonal > 0:
+					if countOtherFDiagonal == 2:
+						heurVal += 3
+					elif countOtherFDiagonal == 3:
+						heurVal += 8
+				
+				elif countSelfFDiagonal > 0:
+					if countSelfFDiagonal == 2:
+						heurVal += 3
+					elif countSelfFDiagonal == 3:
+						heurVal += 8
+						
+				# Evaluating Backward Diagonal
+				if countOtherBDiagonal > 0 and countSelfBDiagonal > 0:
+					if countOtherBDiagonal == 2:
+						heurVal += 3
+					elif countOtherBDiagonal == 3:
+						heurVal += 8
+				
+				elif countSelfBDiagonal > 0:
+					if countSelfBDiagonal == 2:
+						heurVal += 3
+					elif countSelfBDiagonal == 3:
+						heurVal += 8
+
+				# Winning/Losing Centre Blocks
+				if((k==1 or k==2) and (l==1 or l==2)):
+					if(bs[k][l] == ownFlag):
+						heurVal += 10
+					elif(bs[k][l] == oppFlag):
+						heurVal -= 10
+
+				# Winning/Losing Corner Blocks
+				if((k==0 or k==3) and (l==0 or l==3)):
+					if(bs[k][l] == ownFlag):
+						heurVal += 8
+					elif(bs[k][l] ==oppFlag):
+						heurVal -= 8
+
+				# Winning/Losing Blocks
+				if bs[k][l] == ownFlag:
+					heurVal += 20
+				elif bs[k][l] == oppFlag:
+					heurVal -= 20
+
+		return heurVal
